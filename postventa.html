@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postventa y Soporte | PhoneCorp Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+    <style>
+        /* ── Estilos exclusivos de postventa.html ── */
+
+        /* Hero banner de la página */
+        .pv-page-hero {
+            padding: 10rem clamp(1rem, 5%, 5%) 4rem;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .pv-page-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pv-hero-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .pv-hero-text {}
+        .pv-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 1.2rem;
+        }
+        .pv-breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .pv-breadcrumb a:hover { color: var(--text); }
+        .pv-breadcrumb svg { opacity: 0.4; }
+        .pv-page-hero h1 {
+            font-family: 'Archivo', sans-serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 0.8rem;
+            line-height: 1.1;
+        }
+        .pv-page-hero p {
+            font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+            color: var(--text-muted);
+            max-width: 480px;
+            line-height: 1.6;
+        }
+        /* Stats rápidas en el hero */
+        .pv-hero-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .pv-stat {
+            text-align: right;
+        }
+        .pv-stat-num {
+            font-family: 'Archivo', sans-serif;
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            font-weight: 800;
+            color: var(--text);
+            display: block;
+        }
+        .pv-stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* Contenedor principal de la página */
+        .pv-page-body {
+            padding: clamp(2.5rem, 5vw, 5rem) clamp(1rem, 5%, 5%);
+            background: var(--bg-2);
+            min-height: 70vh;
+        }
+        .pv-page-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Layout: columna izquierda + mapa derecha */
+        .pv-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .pv-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Tarjeta base */
+        .pv-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.6rem;
+            transition: border-color 0.25s;
+        }
+        .pv-card:hover { border-color: var(--border-hover); }
+        .pv-card-result { border-color: rgba(255,255,255,0.12); }
+        .pv-warehouse-card { border-left: 2px solid rgba(255,255,255,0.15); }
+
+        /* Header de tarjeta */
+        .pv-card-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 1.2rem;
+        }
+        .pv-card-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+        .pv-card-header h3 {
+            font-family: 'Archivo', sans-serif;
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--text);
+            flex: 1;
+            margin: 0;
+        }
+
+        /* Botón "Nueva consulta" */
+        .pv-reset-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+            white-space: nowrap;
+        }
+        .pv-reset-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+        /* Hint texto */
+        .pv-hint {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Formulario */
+        .pv-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .pv-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .pv-field label {
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .pv-field input,
+        .pv-field select,
+        .pv-field textarea {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.65rem 0.8rem;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .pv-field input:focus,
+        .pv-field select:focus,
+        .pv-field textarea:focus {
+            border-color: rgba(255,255,255,0.28);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+        }
+        .pv-field textarea { resize: vertical; min-height: 90px; }
+
+        /* Botones */
+        .pv-btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .pv-btn-primary:hover { opacity: 0.86; transform: translateY(-1px); }
+        .pv-btn-primary:active { transform: translateY(0); }
+
+        .pv-btn-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border-hover);
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+        .pv-btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); transform: translateY(-1px); }
+
+        .pv-btn-outline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
+            padding: 0.62rem 1rem;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.83rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .pv-btn-outline:hover { color: var(--text); border-color: var(--border-hover); }
+        .pv-btn-outline:disabled { opacity: 0.45; cursor: default; }
+
+        /* Info del pedido */
+        .pv-order-grid { display: flex; flex-direction: column; }
+        .pv-order-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+        .pv-order-row:last-child { border-bottom: none; }
+        .pv-order-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+        .pv-order-value { color: var(--text); font-size: 0.85rem; text-align: right; }
+        .pv-order-highlight { font-weight: 700; }
+
+        /* Estado del pedido – barra de progreso visual */
+        .pv-progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 1.2rem 0 0.5rem;
+        }
+        .pv-progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 5px;
+            position: relative;
+        }
+        .pv-progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            border: 2px solid var(--border);
+            z-index: 1;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .pv-progress-dot.done   { background: var(--text); border-color: var(--text); }
+        .pv-progress-dot.active { background: var(--text); border-color: var(--text); box-shadow: 0 0 0 4px rgba(255,255,255,0.12); }
+        .pv-progress-line {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .pv-progress-line.done { background: var(--text); }
+        .pv-progress-label {
+            font-size: 0.67rem;
+            color: var(--text-dim);
+            text-align: center;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .pv-progress-label.active { color: var(--text-muted); }
+        .pv-progress-label.done   { color: var(--text-muted); }
+
+        /* Detalles almacén */
+        .pv-warehouse-details { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 0.2rem; }
+        .pv-wh-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+        .pv-wh-row svg { flex-shrink: 0; margin-top: 2px; }
+
+        .pv-route-status {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.5rem;
+            line-height: 1.45;
+        }
+
+        /* Confirmación ticket */
+        .pv-ticket-confirm {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.2rem;
+        }
+        .pv-ticket-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border-hover);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--text);
+        }
+        .pv-ticket-num {
+            font-family: 'Archivo', sans-serif;
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 4px;
+        }
+        .pv-ticket-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        /* Columna derecha: mapa */
+        .pv-right { position: sticky; top: 90px; }
+
+        .pv-map-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .pv-map-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 1.1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .pv-map-header h3 {
+            font-family: 'Archivo', sans-serif;
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--text);
+            flex: 1;
+            margin: 0;
+        }
+        .pv-map-badge {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 11px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif;
+            white-space: nowrap;
+            display: none;
+        }
+        .pv-map-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 580px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .pv-map-canvas {
+            width: 100%;
+            height: 580px;
+            display: none;
+        }
+        .pv-map-canvas.visible { display: block; }
+
+        /* Leaflet – tema oscuro */
+        .leaflet-popup-content-wrapper {
+            background: #161616 !important;
+            color: #fff !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
+        }
+        .leaflet-popup-tip { background: #161616 !important; }
+        .leaflet-popup-close-button { color: #666 !important; top: 8px !important; right: 8px !important; }
+        .leaflet-control-attribution { background: rgba(0,0,0,0.7) !important; color: #444 !important; font-size: 9px !important; }
+        .leaflet-control-attribution a { color: #555 !important; }
+        .leaflet-control-zoom a { background: #1a1a1a !important; color: #aaa !important; border-color: #333 !important; }
+        .leaflet-control-zoom a:hover { background: #222 !important; color: #fff !important; }
+
+        /* Spinner (reutiliza .loader-spin de styles.css) */
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .pv-layout { grid-template-columns: 1fr; }
+            .pv-right { position: static; }
+            .pv-map-canvas, .pv-map-loader { height: 400px; }
+        }
+        @media (max-width: 640px) {
+            .pv-form-row { grid-template-columns: 1fr; }
+            .pv-hero-stats { display: none; }
+            .pv-map-canvas, .pv-map-loader { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ══ HEADER (mismo que index.html) ══ -->
+    <header>
+        <nav>
+            <div class="logo">PhoneCorp</div>
+            <ul class="nav-links">
+                <li><a href="index.html#inicio">Inicio</a></li>
+                <li><a href="index.html#productos">Productos</a></li>
+                <li><a href="index.html#nosotros">Nosotros</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+                <li><a href="postventa.html" class="nav-active">Postventa</a></li>
+                <li><button class="btn btn-primary">Mi Cuenta</button></li>
+            </ul>
+            <button class="hamburger" id="hamburger-btn" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Menú móvil -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú de navegación">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">Menú</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Cerrar menú">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <nav class="mobile-menu-links">
+            <a href="index.html#inicio" onclick="closeMobileMenu()">Inicio</a>
+            <a href="index.html#productos" onclick="closeMobileMenu()">Productos</a>
+            <a href="index.html#nosotros" onclick="closeMobileMenu()">Nosotros</a>
+            <a href="index.html#contacto" onclick="closeMobileMenu()">Contacto</a>
+            <a href="postventa.html" onclick="closeMobileMenu()">Postventa</a>
+        </nav>
+        <div class="mobile-menu-footer">
+            <button class="btn btn-primary">Mi Cuenta</button>
+        </div>
+    </div>
+
+    <!-- ══ HERO ══ -->
+    <section class="pv-page-hero">
+        <div class="pv-hero-inner">
+            <div class="pv-hero-text">
+                <div class="pv-breadcrumb">
+                    <a href="index.html">PhoneCorp</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <span>Postventa</span>
+                </div>
+                <h1>Centro de<br><span class="gradient-text">Postventa</span></h1>
+                <p>Consulta el estado de tu pedido, localiza nuestro almacén en el mapa y crea un ticket de soporte si necesitas ayuda.</p>
+            </div>
+            <div class="pv-hero-stats">
+                <div class="pv-stat">
+                    <span class="pv-stat-num">&lt; 24h</span>
+                    <span class="pv-stat-label">Respuesta a tickets</span>
+                </div>
+                <div class="pv-stat">
+                    <span class="pv-stat-num">6</span>
+                    <span class="pv-stat-label">Días de atención</span>
+                </div>
+                <div class="pv-stat">
+                    <span class="pv-stat-num">Lima</span>
+                    <span class="pv-stat-label">Almacén San Isidro</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ CUERPO PRINCIPAL ══ -->
+    <main class="pv-page-body">
+        <div class="pv-page-inner">
+            <div class="pv-layout">
+
+                <!-- ── COLUMNA IZQUIERDA ── -->
+                <div class="pv-left">
+
+                    <!-- Tarjeta: Buscar pedido -->
+                    <div class="pv-card" id="pv-search-card">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            </div>
+                            <h3>Consultar Pedido</h3>
+                        </div>
+                        <p class="pv-hint">Ingresa tu documento y número de orden para ver el estado de tu compra en tiempo real.</p>
+                        <div class="pv-form-row">
+                            <div class="pv-field">
+                                <label>DNI / RUC</label>
+                                <input type="text" id="pv-inp-doc" placeholder="12345678" maxlength="11" autocomplete="off">
+                            </div>
+                            <div class="pv-field">
+                                <label>N° de Orden</label>
+                                <input type="text" id="pv-inp-orden" placeholder="PC-2026-0001" style="text-transform:uppercase;" autocomplete="off">
+                            </div>
+                        </div>
+                        <button class="pv-btn-primary" onclick="buscarPedido()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            Consultar
+                        </button>
+                    </div>
+
+                    <!-- Tarjeta: Resultado del pedido -->
+                    <div class="pv-card pv-card-result" id="pv-result-card" style="display:none;">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </div>
+                            <h3>Estado del Pedido</h3>
+                            <button class="pv-reset-btn" onclick="resetPostventa()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                Nueva consulta
+                            </button>
+                        </div>
+                        <!-- Barra de progreso -->
+                        <div class="pv-progress-bar" id="pv-progress"></div>
+                        <!-- Filas de datos -->
+                        <div id="pv-order-info" class="pv-order-grid"></div>
+                    </div>
+
+                    <!-- Tarjeta: Crear ticket -->
+                    <div class="pv-card" id="pv-ticket-card" style="display:none;">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                            <h3>Ticket de Soporte</h3>
+                        </div>
+                        <div id="pv-ticket-form">
+                            <div class="pv-field" style="margin-bottom:0.9rem;">
+                                <label>Motivo</label>
+                                <select id="pv-motivo">
+                                    <option value="">Selecciona un motivo...</option>
+                                    <option>Producto defectuoso</option>
+                                    <option>No llegó el pedido</option>
+                                    <option>Cambio o devolución</option>
+                                    <option>Error en el comprobante</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="pv-field" style="margin-bottom:1.2rem;">
+                                <label>Descripción</label>
+                                <textarea id="pv-descripcion" rows="4" placeholder="Describe el problema con el mayor detalle posible..."></textarea>
+                            </div>
+                            <button class="pv-btn-secondary" onclick="createTicket()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+                                Enviar Ticket
+                            </button>
+                        </div>
+                        <div id="pv-ticket-ok" style="display:none;">
+                            <div class="pv-ticket-confirm">
+                                <div class="pv-ticket-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                </div>
+                                <div>
+                                    <p id="pv-ticket-num" class="pv-ticket-num"></p>
+                                    <p class="pv-ticket-sub">Un agente revisará tu caso en las próximas 24 horas hábiles. Recibirás una respuesta en tu correo registrado.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta: Info del almacén -->
+                    <div class="pv-card pv-warehouse-card">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </div>
+                            <h3>Almacén Central</h3>
+                        </div>
+                        <div class="pv-warehouse-details">
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Av. Innovación Tecnológica N.º 123, San Isidro, Lima</span>
+                            </div>
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.33 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>(01) 999-1919</span>
+                            </div>
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Lunes a Viernes: 8:00 AM – 6:00 PM · Sábados: 9:00 AM – 1:00 PM</span>
+                            </div>
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <span>soporte@phonecorp.pe</span>
+                            </div>
+                        </div>
+                        <button class="pv-btn-outline" id="pv-route-btn" onclick="pvGenerateRoute()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                            Cómo llegar
+                        </button>
+                        <p id="pv-route-status" class="pv-route-status" style="display:none;"></p>
+                    </div>
+
+                </div>
+
+                <!-- ── COLUMNA DERECHA: MAPA ── -->
+                <div class="pv-right">
+                    <div class="pv-map-wrapper">
+                        <div class="pv-map-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                            </div>
+                            <h3>Ubicación del Almacén</h3>
+                            <span id="pv-map-badge" class="pv-map-badge">San Isidro, Lima</span>
+                        </div>
+                        <div id="pv-map-loader" class="pv-map-loader">
+                            <span class="loader-spin"></span>
+                            <span>Cargando mapa...</span>
+                        </div>
+                        <div id="pv-map" class="pv-map-canvas"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ══ FOOTER (mismo que index.html) ══ -->
+    <footer id="contacto">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>PhoneCorp</h3>
+                <p>Líder en comercialización digital de smartphones de última generación en Perú.</p>
+                <p>
+                    <span style="display:inline-flex;vertical-align:middle;margin-right:6px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </span>Av. Innovación Tecnológica N.º 123<br>San Isidro, Lima – Perú
+                </p>
+                <p>
+                    <span style="display:inline-flex;vertical-align:middle;margin-right:6px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.33 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>(01) 999-1919
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Productos</h4>
+                <ul>
+                    <li><a href="index.html#productos">iPhone</a></li>
+                    <li><a href="index.html#productos">Samsung</a></li>
+                    <li><a href="index.html#productos">Xiaomi</a></li>
+                    <li><a href="index.html#productos">Google Pixel</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="postventa.html">Seguimiento de pedido</a></li>
+                    <li><a href="postventa.html">Garantías</a></li>
+                    <li><a href="postventa.html">Devoluciones</a></li>
+                    <li><a href="postventa.html">Crear ticket</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="index.html#nosotros">Nosotros</a></li>
+                    <li><a href="#">Términos</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PhoneCorp Solutions S.A.C. | RUC: 20999999999 | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script>
+        // ── HAMBURGER ──
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileMenu   = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        function openMobileMenu() {
+            hamburgerBtn.classList.add('open');
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            hamburgerBtn.setAttribute('aria-expanded', 'true');
+        }
+        function closeMobileMenu() {
+            hamburgerBtn.classList.remove('open');
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+        }
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+
+        // ── HEADER SCROLL ──
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            header.style.boxShadow = window.pageYOffset > 80 ? '0 4px 20px rgba(0,0,0,0.35)' : 'none';
+        });
+
+        // ── MAPA LEAFLET ──
+        const WAREHOUSE = {
+            lat: -12.0924,
+            lng: -77.0224,
+            name: 'PhoneCorp – Almacén Central',
+            address: 'Av. Innovación Tecnológica N.º 123, San Isidro, Lima'
+        };
+
+        let pvMap = null;
+        let pvWarehouseMarker = null;
+        let pvUserMarker = null;
+        let pvRouteControl = null;
+        let pvUserLocation = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(pvInitMap, 200);
+        });
+
+        function pvInitMap() {
+            if (typeof L === 'undefined') {
+                document.getElementById('pv-map-loader').innerHTML =
+                    '<span style="color:#f87171;font-size:0.85rem;">No se pudo cargar el mapa. Verifica tu conexión.</span>';
+                return;
+            }
+
+            pvMap = L.map('pv-map', {
+                center: [WAREHOUSE.lat, WAREHOUSE.lng],
+                zoom: 15,
+                zoomControl: true,
+                scrollWheelZoom: false
+            });
+
+            // Tiles oscuros CartoDB
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap © CARTO',
+                maxZoom: 19
+            }).addTo(pvMap);
+
+            // Marcador almacén
+            const warehouseIcon = L.divIcon({
+                html: `<div style="
+                    width:42px;height:42px;
+                    background:#fff;
+                    border-radius:50% 50% 50% 0;
+                    transform:rotate(-45deg);
+                    border:2px solid rgba(255,255,255,0.2);
+                    box-shadow:0 4px 20px rgba(0,0,0,0.6);
+                    display:flex;align-items:center;justify-content:center;">
+                    <svg style="transform:rotate(45deg)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </div>`,
+                className: '',
+                iconSize: [42, 42],
+                iconAnchor: [21, 42],
+                popupAnchor: [0, -46]
+            });
+
+            pvWarehouseMarker = L.marker([WAREHOUSE.lat, WAREHOUSE.lng], { icon: warehouseIcon })
+                .addTo(pvMap)
+                .bindPopup(`
+                    <div style="font-family:'DM Sans',sans-serif;padding:2px 0;min-width:200px;">
+                        <strong style="font-size:0.9rem;display:block;margin-bottom:4px;">${WAREHOUSE.name}</strong>
+                        <span style="font-size:0.8rem;color:#aaa;display:block;margin-bottom:3px;">${WAREHOUSE.address}</span>
+                        <span style="font-size:0.78rem;color:#777;">(01) 999-1919 &nbsp;·&nbsp; Lun–Vie 8–18h</span>
+                    </div>
+                `, { maxWidth: 280 })
+                .openPopup();
+
+            document.getElementById('pv-map-loader').style.display = 'none';
+            const mapCanvas = document.getElementById('pv-map');
+            mapCanvas.classList.add('visible');
+            document.getElementById('pv-map-badge').style.display = 'inline-block';
+
+            setTimeout(() => pvMap.invalidateSize(), 100);
+            pvRequestUserLocation();
+        }
+
+        function pvRequestUserLocation() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(pos => {
+                pvUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                const userIcon = L.divIcon({
+                    html: `<div style="
+                        width:16px;height:16px;border-radius:50%;
+                        background:#fff;
+                        border:3px solid rgba(255,255,255,0.35);
+                        box-shadow:0 0 0 7px rgba(255,255,255,0.1),0 2px 10px rgba(0,0,0,0.5);">
+                    </div>`,
+                    className: '',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                pvUserMarker = L.marker([pvUserLocation.lat, pvUserLocation.lng], { icon: userIcon })
+                    .addTo(pvMap)
+                    .bindPopup('<span style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;">Tu ubicación actual</span>');
+            }, () => {});
+        }
+
+        function pvGenerateRoute() {
+            if (!pvMap) return;
+            const statusEl = document.getElementById('pv-route-status');
+            const btn = document.getElementById('pv-route-btn');
+
+            if (!pvUserLocation) {
+                statusEl.textContent = 'Activa tu ubicación en el navegador para generar la ruta.';
+                statusEl.style.display = 'block';
+                pvMap.setView([WAREHOUSE.lat, WAREHOUSE.lng], 15);
+                pvWarehouseMarker.openPopup();
+                return;
+            }
+
+            if (pvRouteControl) { pvMap.removeControl(pvRouteControl); pvRouteControl = null; }
+
+            if (typeof L.Routing !== 'undefined') {
+                pvRouteControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(pvUserLocation.lat, pvUserLocation.lng),
+                        L.latLng(WAREHOUSE.lat, WAREHOUSE.lng)
+                    ],
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    show: false,
+                    collapsible: true,
+                    createMarker: () => null,
+                    lineOptions: {
+                        styles: [{ color: '#ffffff', weight: 3, opacity: 0.65 }]
+                    }
+                }).addTo(pvMap);
+
+                setTimeout(() => {
+                    pvMap.fitBounds(
+                        L.featureGroup([pvUserMarker, pvWarehouseMarker]).getBounds().pad(0.15)
+                    );
+                }, 1200);
+            } else {
+                L.polyline(
+                    [[pvUserLocation.lat, pvUserLocation.lng], [WAREHOUSE.lat, WAREHOUSE.lng]],
+                    { color: '#fff', weight: 2, opacity: 0.55, dashArray: '6,5' }
+                ).addTo(pvMap);
+                pvMap.fitBounds(
+                    L.featureGroup([pvUserMarker, pvWarehouseMarker]).getBounds().pad(0.15)
+                );
+            }
+
+            btn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                Ruta generada
+            `;
+            btn.disabled = true;
+            statusEl.textContent = 'Ruta calculada hasta el almacén PhoneCorp.';
+            statusEl.style.display = 'block';
+        }
+
+        // ── LÓGICA DE PEDIDO ──
+        let ticketCounter = parseInt(sessionStorage.getItem('pc_ticket_counter') || '0');
+
+        const PROGRESS_STEPS = ['Confirmado', 'Preparando', 'Enviado', 'Entregado'];
+        const STATE_TO_STEP = { 'CONFIRMADO':0, 'PREPARANDO':1, 'ENVIADO':2, 'ENTREGADO':3 };
+
+        function buscarPedido() {
+            const doc   = document.getElementById('pv-inp-doc').value.trim();
+            const orden = document.getElementById('pv-inp-orden').value.trim().toUpperCase();
+
+            if (!doc || !orden) { alert('Ingresa tu documento y número de orden.'); return; }
+            if (!/^\d{8}$|^\d{11}$/.test(doc)) { alert('DNI (8 dígitos) o RUC (11 dígitos) inválido.'); return; }
+            if (!orden.startsWith('PC-')) { alert('El formato debe ser PC-YYYY-NNNN.'); return; }
+
+            const estados = ['CONFIRMADO', 'PREPARANDO', 'ENVIADO', 'ENTREGADO'];
+            const fakeEstado = estados[Math.floor(Math.random() * estados.length)];
+            const fakeModalidad = Math.random() > 0.5 ? 'Delivery' : 'Recojo en Tienda';
+            const estadoColor = {
+                'ENTREGADO': '#4ade80',
+                'ENVIADO':   '#60a5fa',
+                'PREPARANDO':'#fbbf24',
+                'CONFIRMADO':'#c084fc'
+            }[fakeEstado];
+
+            // Barra de progreso
+            const stepIdx = STATE_TO_STEP[fakeEstado] ?? 0;
+            let progressHTML = '';
+            PROGRESS_STEPS.forEach((label, i) => {
+                const isDone   = i < stepIdx;
+                const isActive = i === stepIdx;
+                const dotClass = isDone ? 'done' : isActive ? 'active' : '';
+                const lineClass = i < stepIdx ? 'done' : '';
+                progressHTML += `
+                    <div class="pv-progress-step">
+                        <div class="pv-progress-dot ${dotClass}"></div>
+                        ${i < PROGRESS_STEPS.length - 1 ? `<div class="pv-progress-line ${lineClass}"></div>` : ''}
+                        <span class="pv-progress-label ${dotClass}">${label}</span>
+                    </div>`;
+            });
+            document.getElementById('pv-progress').innerHTML = progressHTML;
+
+            // Filas de datos
+            document.getElementById('pv-order-info').innerHTML = `
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        N° de Orden
+                    </span>
+                    <span class="pv-order-value pv-order-highlight">${orden}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Estado
+                    </span>
+                    <span class="pv-order-value" style="color:${estadoColor};font-weight:600;">${fakeEstado}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        Modalidad
+                    </span>
+                    <span class="pv-order-value">${fakeModalidad}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Documento
+                    </span>
+                    <span class="pv-order-value">${doc}</span>
+                </div>
+            `;
+
+            document.getElementById('pv-result-card').style.display = 'block';
+            document.getElementById('pv-ticket-card').style.display = 'block';
+            document.getElementById('pv-search-card').style.display = 'none';
+            document.getElementById('pv-result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetPostventa() {
+            document.getElementById('pv-search-card').style.display  = 'block';
+            document.getElementById('pv-result-card').style.display  = 'none';
+            document.getElementById('pv-ticket-card').style.display  = 'none';
+            document.getElementById('pv-ticket-form').style.display  = 'block';
+            document.getElementById('pv-ticket-ok').style.display    = 'none';
+            document.getElementById('pv-motivo').value               = '';
+            document.getElementById('pv-descripcion').value          = '';
+            document.getElementById('pv-inp-doc').value              = '';
+            document.getElementById('pv-inp-orden').value            = '';
+        }
+
+        function createTicket() {
+            const motivo = document.getElementById('pv-motivo').value;
+            const desc   = document.getElementById('pv-descripcion').value.trim();
+            if (!motivo) { alert('Selecciona un motivo.'); return; }
+            if (desc.length < 10) { alert('La descripción debe tener al menos 10 caracteres.'); return; }
+
+            ticketCounter++;
+            sessionStorage.setItem('pc_ticket_counter', ticketCounter);
+            const tckNum = 'TCK-' + String(ticketCounter).padStart(4, '0');
+
+            document.getElementById('pv-ticket-form').style.display = 'none';
+            document.getElementById('pv-ticket-ok').style.display   = 'block';
+            document.getElementById('pv-ticket-num').textContent    = 'Ticket registrado: ' + tckNum;
+        }
+    </script>
+</body>
+</html>
