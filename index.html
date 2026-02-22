@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneCorp Solutions | Smartphones de Última Generación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet Routing Machine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="logo">PhoneCorp</div>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="#postventa">Postventa</a></li>
+                <li><button class="btn btn-primary">Mi Cuenta</button></li>
+                <li>
+                    <button id="cart-btn" onclick="openCart()" style="background:none;border:none;cursor:pointer;position:relative;padding:8px;display:flex;align-items:center;justify-content:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <span id="cart-badge" style="display:none;position:absolute;top:0;right:0;background:#fff;color:#000;font-size:0.65rem;font-weight:800;width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;">0</span>
+                    </button>
+                </li>
+            </ul>
+            <!-- Botón hamburguesa (solo móvil) -->
+            <button class="hamburger" id="hamburger-btn" aria-label="Abrir menú" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Overlay oscuro del menú móvil -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Drawer del menú móvil -->
+    <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú de navegación">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">Menú</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Cerrar menú">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <nav class="mobile-menu-links">
+            <a href="#inicio" onclick="closeMobileMenu()">Inicio</a>
+            <a href="#productos" onclick="closeMobileMenu()">Productos</a>
+            <a href="#nosotros" onclick="closeMobileMenu()">Nosotros</a>
+            <a href="#contacto" onclick="closeMobileMenu()">Contacto</a>
+        </nav>
+        <div class="mobile-menu-footer">
+            <button class="btn btn-primary">Mi Cuenta</button>
+            <button class="mobile-cart-btn" onclick="closeMobileMenu(); openCart();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Ver Carrito
+                <span class="mobile-cart-count" id="mobile-cart-count" style="display:none;">0</span>
+            </button>
+        </div>
+    </div>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>
+                    Tecnología <span class="gradient-text">Móvil</span><br>
+                    de Última Generación
+                </h1>
+                <p>Descubre los smartphones más avanzados del mercado. Compra online con seguridad, envío rápido a todo el Perú y atención personalizada 24/7.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">Ver Catálogo</button>
+                    <button class="btn btn-secondary">Conocer Más</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="phone-showcase">
+                    <div class="phone-card">
+                        <div class="phone-screen">
+                            <div class="screen-content">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem;opacity:0.4"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+                                <span>Tu próximo<br>smartphone</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-title">
+            <h2>¿Por qué elegir <span class="gradient-text">PhoneCorp</span>?</h2>
+            <p>Líder en comercialización digital de smartphones en Perú</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>
+                <h3>Entrega Express</h3>
+                <p>Procesamiento en menos de 24 horas y envíos a las principales ciudades del país.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <h3>Pago Seguro</h3>
+                <p>Pasarela de pagos certificada con múltiples métodos: tarjetas, efectivo y crédito.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
+                <h3>Stock en Tiempo Real</h3>
+                <p>Inventario sincronizado. Solo compras lo que tenemos disponible.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M7 9H4"/><path d="M7 12H4"/><path d="M7 15H4"/><path d="M17 9h3"/><path d="M17 12h3"/><path d="M17 15h3"/><path d="M9 7V4"/><path d="M12 7V4"/><path d="M15 7V4"/><path d="M9 17v3"/><path d="M12 17v3"/><path d="M15 17v3"/></svg></div>
+                <h3>Última Tecnología</h3>
+                <p>Catálogo actualizado con los modelos más recientes de todas las marcas.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                <h3>Seguimiento 24/7</h3>
+                <p>Rastrea tu pedido en tiempo real desde la compra hasta tu puerta.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                <h3>Soporte Premium</h3>
+                <p>Atención personalizada para consultas, garantías y cambios.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="nosotros" id="nosotros">
+        <div class="nosotros-inner">
+
+            <!-- Encabezado -->
+            <div class="section-title">
+                <h2>Sobre <span class="gradient-text">PhoneCorp</span></h2>
+                <p>Conoce quiénes somos, nuestra misión y hacia dónde vamos</p>
+            </div>
+
+            <!-- Bloque Misión / Visión -->
+            <div class="nos-mv">
+                <div class="nos-card">
+                    <div class="nos-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                    </div>
+                    <h3>Misión</h3>
+                    <p>Proveer a nuestros clientes acceso inmediato a una amplia gama de teléfonos inteligentes de última generación a través de un canal digital confiable, garantizando calidad y rapidez en la entrega.</p>
+                </div>
+                <div class="nos-card">
+                    <div class="nos-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <h3>Visión</h3>
+                    <p>Ser la plataforma líder a nivel nacional en la comercialización digital de smartphones, reconocida por ofrecer la tecnología móvil más reciente con una experiencia de compra segura y eficiente.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="products" id="productos">
+        <div class="section-title">
+            <h2>Smartphones <span class="gradient-text">Destacados</span></h2>
+            <p>Los modelos más populares y tecnología de punta</p>
+        </div>
+        <div class="products-slider">
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="product-badge">Nuevo</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.25"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6"/><circle cx="12" cy="17" r="1"/></svg>
+                </div>
+                <div class="product-info">
+                    <h3>iPhone 15 Pro Max</h3>
+                    <div class="product-specs">
+                        <span class="spec-tag">256GB</span>
+                        <span class="spec-tag">6.7"</span>
+                        <span class="spec-tag">5G</span>
+                    </div>
+                    <div class="product-price">S/ 5,499</div>
+                    <div class="stock-badge" id="stock-label-iphone15promax">Stock: 5 unidades</div>
+                    <div class="product-actions">
+                        <button class="btn-cart" id="btn-cart-iphone15promax" onclick="addToCart('iPhone 15 Pro Max', 5499, 'iphone15promax')">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="product-badge">Popular</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.25"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6"/><circle cx="12" cy="17" r="1"/></svg>
+                </div>
+                <div class="product-info">
+                    <h3>Samsung Galaxy S24 Ultra</h3>
+                    <div class="product-specs">
+                        <span class="spec-tag">512GB</span>
+                        <span class="spec-tag">6.8"</span>
+                        <span class="spec-tag">5G</span>
+                    </div>
+                    <div class="product-price">S/ 4,999</div>
+                    <div class="stock-badge" id="stock-label-samsungs24ultra">Stock: 8 unidades</div>
+                    <div class="product-actions">
+                        <button class="btn-cart" id="btn-cart-samsungs24ultra" onclick="addToCart('Samsung Galaxy S24 Ultra', 4999, 'samsungs24ultra')">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.25"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6"/><circle cx="12" cy="17" r="1"/></svg>
+                </div>
+                <div class="product-info">
+                    <h3>Google Pixel 8 Pro</h3>
+                    <div class="product-specs">
+                        <span class="spec-tag">256GB</span>
+                        <span class="spec-tag">6.7"</span>
+                        <span class="spec-tag">5G</span>
+                    </div>
+                    <div class="product-price">S/ 3,799</div>
+                    <div class="stock-badge stock-out" id="stock-label-pixel8pro">Stock: 0 unidades</div>
+                    <div class="product-actions">
+                        <button class="btn-cart btn-cart-disabled" id="btn-cart-pixel8pro" disabled>Sin Stock</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="product-badge">Oferta</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.25"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6"/><circle cx="12" cy="17" r="1"/></svg>
+                </div>
+                <div class="product-info">
+                    <h3>Xiaomi 14 Ultra</h3>
+                    <div class="product-specs">
+                        <span class="spec-tag">512GB</span>
+                        <span class="spec-tag">6.73"</span>
+                        <span class="spec-tag">5G</span>
+                    </div>
+                    <div class="product-price">S/ 3,499</div>
+                    <div class="stock-badge" id="stock-label-xiaomi14ultra">Stock: 3 unidades</div>
+                    <div class="product-actions">
+                        <button class="btn-cart" id="btn-cart-xiaomi14ultra" onclick="addToCart('Xiaomi 14 Ultra', 3499, 'xiaomi14ultra')">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN POSTVENTA ── -->
+    <section id="postventa" class="pv-section">
+        <div class="pv-inner">
+
+            <!-- Encabezado de sección -->
+            <div class="section-title">
+                <h2>Centro de <span class="gradient-text">Postventa</span></h2>
+                <p>Consulta el estado de tu pedido y ubica nuestro almacén en tiempo real</p>
+            </div>
+
+            <div class="pv-layout">
+
+                <!-- ── COLUMNA IZQUIERDA: formulario + resultado ── -->
+                <div class="pv-left">
+
+                    <!-- Panel: buscar pedido -->
+                    <div class="pv-card" id="pv-search-card">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            </div>
+                            <h3>Consultar Pedido</h3>
+                        </div>
+                        <p class="pv-hint">Ingresa tu documento y número de orden para ver el estado de tu compra.</p>
+                        <div class="pv-form-row">
+                            <div class="pv-field">
+                                <label>DNI / RUC</label>
+                                <input type="text" id="pv-inp-doc" placeholder="12345678" maxlength="11" autocomplete="off">
+                            </div>
+                            <div class="pv-field">
+                                <label>N° de Orden</label>
+                                <input type="text" id="pv-inp-orden" placeholder="PC-2026-0001" style="text-transform:uppercase;" autocomplete="off">
+                            </div>
+                        </div>
+                        <button class="pv-btn-primary" onclick="buscarPedido()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            Consultar
+                        </button>
+                    </div>
+
+                    <!-- Panel: resultado del pedido (oculto hasta buscar) -->
+                    <div class="pv-card pv-card-result" id="pv-result-card" style="display:none;">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            </div>
+                            <h3>Estado del Pedido</h3>
+                            <button class="pv-reset-btn" onclick="resetPostventa()" title="Nueva consulta">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                Nueva consulta
+                            </button>
+                        </div>
+                        <div id="pv-order-info" class="pv-order-grid"></div>
+                    </div>
+
+                    <!-- Panel: ticket de soporte (aparece con el resultado) -->
+                    <div class="pv-card" id="pv-ticket-card" style="display:none;">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                            </div>
+                            <h3>Crear Ticket de Soporte</h3>
+                        </div>
+                        <div id="pv-ticket-form">
+                            <div class="pv-field" style="margin-bottom:1rem;">
+                                <label>Motivo</label>
+                                <select id="pv-motivo">
+                                    <option value="">Selecciona un motivo...</option>
+                                    <option>Producto defectuoso</option>
+                                    <option>No llegó el pedido</option>
+                                    <option>Cambio o devolución</option>
+                                    <option>Error en el comprobante</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="pv-field" style="margin-bottom:1.2rem;">
+                                <label>Descripción</label>
+                                <textarea id="pv-descripcion" rows="4" placeholder="Describe el problema con detalle..."></textarea>
+                            </div>
+                            <button class="pv-btn-secondary" onclick="createTicket()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+                                Enviar Ticket
+                            </button>
+                        </div>
+                        <!-- Confirmación -->
+                        <div id="pv-ticket-ok" style="display:none;">
+                            <div class="pv-ticket-confirm">
+                                <div class="pv-ticket-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                </div>
+                                <div>
+                                    <p id="pv-ticket-num" class="pv-ticket-num"></p>
+                                    <p class="pv-ticket-sub">Un agente revisará tu caso en las próximas 24 horas hábiles.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info del almacén (tarjeta inferior izquierda) -->
+                    <div class="pv-card pv-warehouse-card">
+                        <div class="pv-card-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </div>
+                            <h3>Almacén Central</h3>
+                        </div>
+                        <div class="pv-warehouse-details">
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Av. Innovación Tecnológica N.º 123, San Isidro, Lima</span>
+                            </div>
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.33 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>(01) 999-1919</span>
+                            </div>
+                            <div class="pv-wh-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Lunes a Viernes: 8:00 AM – 6:00 PM</span>
+                            </div>
+                        </div>
+                        <button class="pv-btn-outline" id="pv-route-btn" onclick="pvGenerateRoute()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                            Cómo llegar
+                        </button>
+                        <p id="pv-route-status" class="pv-route-status" style="display:none;"></p>
+                    </div>
+
+                </div>
+
+                <!-- ── COLUMNA DERECHA: mapa ── -->
+                <div class="pv-right">
+                    <div class="pv-map-wrapper">
+                        <div class="pv-map-header">
+                            <div class="pv-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                            </div>
+                            <h3>Ubicación del Almacén</h3>
+                            <span id="pv-map-status" class="pv-map-badge"></span>
+                        </div>
+                        <div id="pv-map-loader" class="pv-map-loader">
+                            <span class="loader-spin"></span>
+                            <span>Cargando mapa...</span>
+                        </div>
+                        <div id="pv-map" class="pv-map-canvas"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-content">
+            <h2>¿Listo para tu <span class="gradient-text">nuevo smartphone</span>?</h2>
+            <p>Compra ahora y recibe tu equipo en tiempo récord con todas las garantías y facilidades de pago.</p>
+            <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1.2rem 3rem;">Comprar Ahora</button>
+        </div>
+    </section>
+
+    <footer id="contacto">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>PhoneCorp</h3>
+                <p>Líder en comercialización digital de smartphones de última generación en Perú.</p>
+                <p><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span> Av. Innovación Tecnológica N.º 123<br>San Isidro, Lima – Perú</p>
+                <p><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span> (01) 999-1919</p>
+                <p><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4131292e2f24222e33310131292e2f24222e33312c20282d6f3124">[email&#160;protected]</a></p>
+            </div>
+            <div class="footer-section">
+                <h4>Productos</h4>
+                <ul>
+                    <li><a href="#">iPhone</a></li>
+                    <li><a href="#">Samsung</a></li>
+                    <li><a href="#">Xiaomi</a></li>
+                    <li><a href="#">Google Pixel</a></li>
+                    <li><a href="#">OnePlus</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="#">Seguimiento</a></li>
+                    <li><a href="#">Garantías</a></li>
+                    <li><a href="#">Devoluciones</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Nosotros</a></li>
+                    <li><a href="#">Misión</a></li>
+                    <li><a href="#">Visión</a></li>
+                    <li><a href="#">Términos</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PhoneCorp Solutions S.A.C. | RUC: 20999999999 | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+
+    <!-- ── CART DRAWER ── -->
+    <div id="cart-overlay" onclick="closeCart()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;backdrop-filter:blur(4px);"></div>
+    <div id="cart-drawer">
+        <div id="cart-drawer-header">
+            <span id="cart-drawer-title" style="display:flex;align-items:center;gap:8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Tu Carrito
+            </span>
+            <button onclick="closeCart()" id="cart-close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="cart-items-list"></div>
+        <div id="cart-footer">
+            <div id="cart-subtotal-row">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">S/ 0</span>
+            </div>
+            <button id="btn-checkout" onclick="goCheckout()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                Proceder al Pago
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ── CHECKOUT MODAL ── -->
+    <div id="checkout-overlay" onclick="closeCheckout()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9500;backdrop-filter:blur(6px);overflow-y:auto;"></div>
+    <div id="checkout-modal">
+        <div id="checkout-header">
+            <button onclick="closeCheckout()" id="checkout-back" style="display:flex;align-items:center;gap:6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                Volver
+            </button>
+            <span id="checkout-title">Finalizar Compra</span>
+            <span></span>
+        </div>
+        <!-- Steps indicator -->
+        <div id="steps-bar">
+            <div class="step-item active" id="step-ind-1"><span class="step-num">1</span><span class="step-label">Datos</span></div>
+            <div class="step-line"></div>
+            <div class="step-item" id="step-ind-2"><span class="step-num">2</span><span class="step-label">Dirección</span></div>
+            <div class="step-line"></div>
+            <div class="step-item" id="step-ind-3"><span class="step-num">3</span><span class="step-label">Pago</span></div>
+            <div class="step-line"></div>
+            <div class="step-item" id="step-ind-4"><span class="step-num">4</span><span class="step-label">Confirmar</span></div>
+        </div>
+
+        <!-- STEP 1: Datos personales -->
+        <div id="step-1" class="checkout-step">
+            <h3 class="step-title">Datos del Comprador</h3>
+
+            <!-- Bloque de validación de identidad -->
+            <div class="reniec-block">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Documento *</label>
+                        <select id="inp-tipo-doc" onchange="onTipoDocChange()">
+                            <option value="">Selecciona...</option>
+                            <option value="dni">DNI</option>
+                            <option value="ce">Carnet de Extranjería (CE)</option>
+                            <option value="ruc">RUC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Documento *</label>
+                        <input type="text" id="inp-num-doc" placeholder="Ingresa el número" maxlength="11" oninput="onNumDocInput()">
+                    </div>
+                </div>
+                <div id="btn-validate-wrapper" style="margin-bottom:1rem;display:none;">
+                    <button class="btn-validate-doc" id="btn-validate-doc" onclick="validateDocument()">
+                        <span id="validate-btn-text">Validar con RENIEC</span>
+                        <span id="validate-loader" style="display:none;" class="loader-spin"></span>
+                    </button>
+                    <span id="validate-status" style="display:none;margin-left:12px;font-size:0.9rem;"></span>
+                </div>
+                <!-- Campos extra para RUC -->
+                <div id="ruc-fields" style="display:none;">
+                    <div class="form-group full-width"><label>Razón Social *</label><input type="text" id="inp-razon-social" placeholder="Empresa S.A.C."></div>
+                    <div class="form-group full-width"><label>Dirección Fiscal *</label><input type="text" id="inp-dir-fiscal" placeholder="Av. Principal 123, Lima"></div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"><label>Nombres *</label><input type="text" id="inp-nombres" placeholder="Juan Carlos"></div>
+                <div class="form-group"><label>Apellidos *</label><input type="text" id="inp-apellidos" placeholder="García López"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>DNI / CE (referencia)</label><input type="text" id="inp-dni" placeholder="12345678" maxlength="12" readonly style="opacity:0.6;cursor:not-allowed;"></div>
+                <div class="form-group"><label>Teléfono *</label><input type="tel" id="inp-telefono" placeholder="987 654 321"></div>
+            </div>
+            <div class="form-group full-width"><label>Correo Electrónico *</label><input type="email" id="inp-email" placeholder="juan@email.com"></div>
+            <button class="btn-next" onclick="nextStep(1)" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                Continuar
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
+
+        <!-- STEP 2: Dirección -->
+        <div id="step-2" class="checkout-step" style="display:none;">
+            <h3 class="step-title">Dirección de Entrega</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Departamento *</label>
+                    <select id="inp-dpto">
+                        <option value="">Selecciona...</option>
+                        <option>Lima</option><option>Arequipa</option><option>Cusco</option>
+                        <option>La Libertad</option><option>Piura</option><option>Lambayeque</option>
+                        <option>Junín</option><option>Ica</option><option>Áncash</option><option>Otro</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Provincia *</label><input type="text" id="inp-provincia" placeholder="Lima"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Distrito *</label><input type="text" id="inp-distrito" placeholder="Miraflores"></div>
+                <div class="form-group"><label>Código Postal</label><input type="text" id="inp-cp" placeholder="15074"></div>
+            </div>
+            <div class="form-group full-width"><label>Dirección (Av., calle, número) *</label><input type="text" id="inp-direccion" placeholder="Av. Larco 123"></div>
+            <div class="form-group full-width"><label>Referencia</label><input type="text" id="inp-referencia" placeholder="Frente al parque, piso 3..."></div>
+            <!-- Modalidad de entrega -->
+            <div class="form-group full-width">
+                <label>Modalidad de Entrega *</label>
+                <select id="inp-modalidad" onchange="onModalidadChange()">
+                    <option value="delivery">Delivery (recargo S/ 15)</option>
+                    <option value="tienda">Recojo en Tienda (gratis)</option>
+                </select>
+            </div>
+            <div id="delivery-recargo-msg" class="delivery-info-box" style="background:rgba(234,179,8,0.1);border-color:rgba(234,179,8,0.3);color:#fbbf24;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                Delivery seleccionado – recargo de S/ 15 se aplicará al total
+            </div>
+            <div class="delivery-info-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                Lima Metropolitana: 1–2 días · Provincias: 3–5 días
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button class="btn-back" onclick="prevStep(2)" style="display:flex;align-items:center;gap:6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    Atrás
+                </button>
+                <button class="btn-next" onclick="nextStep(2)" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                    Continuar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Método de pago -->
+        <div id="step-3" class="checkout-step" style="display:none;">
+            <h3 class="step-title">Método de Pago</h3>
+
+            <!-- Tipo de comprobante -->
+            <div class="comprobante-block">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Comprobante *</label>
+                        <select id="inp-comprobante" onchange="onComprobanteChange()">
+                            <option value="boleta">Boleta Electrónica</option>
+                            <option value="factura">Factura Electrónica</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="factura-fields" style="display:none;">
+                    <div class="form-group full-width"><label>RUC de la empresa *</label><input type="text" id="inp-factura-ruc" placeholder="20123456789" maxlength="11"></div>
+                    <div class="form-group full-width"><label>Razón Social *</label><input type="text" id="inp-factura-razon" placeholder="Empresa S.A.C."></div>
+                </div>
+            </div>
+            <div id="payment-methods">
+                <div class="pay-option" id="pay-paypal" onclick="selectPay('paypal')">
+                    <div class="pay-radio"></div>
+                    <div class="pay-icon" style="background:#0070ba;color:#fff;border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:900;letter-spacing:0.05em;">PayPal</div>
+                    <div class="pay-info"><strong>PayPal</strong><span>Paga con tu cuenta PayPal de forma segura</span></div>
+                </div>
+                <div class="pay-option" id="pay-yape" onclick="selectPay('yape')">
+                    <div class="pay-radio"></div>
+                    <div class="pay-icon" style="background:#6b21a8;color:#fff;border-radius:8px;padding:4px 8px;font-size:0.75rem;font-weight:800;">YAPE</div>
+                    <div class="pay-info"><strong>Yape</strong><span>Escanea el QR y paga al instante</span></div>
+                </div>
+                <div class="pay-option" id="pay-bbva" onclick="selectPay('bbva')">
+                    <div class="pay-radio"></div>
+                    <div class="pay-icon" style="background:#004a97;color:#fff;border-radius:8px;padding:4px 8px;font-size:0.75rem;font-weight:800;">BBVA</div>
+                    <div class="pay-info"><strong>BBVA</strong><span>Transferencia o depósito bancario</span></div>
+                </div>
+                <div class="pay-option" id="pay-visa" onclick="selectPay('visa')">
+                    <div class="pay-radio"></div>
+                    <div class="pay-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+                    </div>
+                    <div class="pay-info"><strong>Visa / Mastercard</strong><span>Tarjeta de crédito o débito</span></div>
+                </div>
+            </div>
+
+            <!-- Visa form -->
+            <div id="visa-form" style="display:none;margin-top:1.5rem;">
+                <div class="form-group full-width"><label>Número de Tarjeta *</label><input type="text" id="inp-card-num" placeholder="1234 5678 9012 3456" maxlength="19"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Vencimiento *</label><input type="text" id="inp-card-exp" placeholder="MM/AA" maxlength="5"></div>
+                    <div class="form-group"><label>CVV *</label><input type="text" id="inp-card-cvv" placeholder="123" maxlength="4"></div>
+                </div>
+                <div class="form-group full-width"><label>Nombre en la tarjeta *</label><input type="text" id="inp-card-name" placeholder="JUAN C GARCIA"></div>
+            </div>
+            <div id="yape-info" style="display:none;margin-top:1.5rem;text-align:center;">
+                <div style="background:#6b21a8;color:#fff;padding:1.5rem;border-radius:8px;">
+                    <div style="display:flex;justify-content:center;margin-bottom:0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                    </div>
+                    <p style="font-weight:700;margin:0.5rem 0;">Escanea con Yape</p>
+                    <p style="font-size:0.85rem;opacity:0.8;">Al confirmar la orden recibirás el QR de pago en tu correo</p>
+                </div>
+            </div>
+            <!-- BBVA info -->
+            <div id="bbva-info" style="display:none;margin-top:1.5rem;">
+                <div style="background:#004a97;color:#fff;padding:1.5rem;border-radius:8px;">
+                    <p style="font-weight:700;">Cuenta BBVA</p>
+                    <p style="font-size:1.2rem;letter-spacing:0.1em;margin:0.5rem 0;">0011-0175-01-12345678</p>
+                    <p style="font-size:0.8rem;opacity:0.8;">CCI: 011-175-000123456789-00</p>
+                </div>
+            </div>
+            <!-- PayPal info -->
+            <div id="paypal-info" style="display:none;margin-top:1.5rem;text-align:center;">
+                <div style="background:#0070ba;color:#fff;padding:1.5rem;border-radius:8px;">
+                    <div style="display:flex;justify-content:center;margin-bottom:0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9a5 5 0 0 1 5 5v1a5 5 0 0 1-5 5H7l-1 6H4L2 6a2 2 0 0 1 2-2h2z"/><path d="M10 13l-1 7"/></svg>
+                    </div>
+                    <p style="font-weight:700;margin:0.5rem 0;">Redirigir a PayPal</p>
+                    <p style="font-size:0.85rem;opacity:0.8;">Al confirmar serás redirigido a PayPal para completar el pago</p>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button class="btn-back" onclick="prevStep(3)" style="display:flex;align-items:center;gap:6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    Atrás
+                </button>
+                <button class="btn-next" onclick="nextStep(3)" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                    Continuar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Confirmación -->
+        <div id="step-4" class="checkout-step" style="display:none;">
+            <h3 class="step-title">Confirmar Pedido</h3>
+            <div id="order-summary"></div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button class="btn-back" onclick="prevStep(4)" style="display:flex;align-items:center;gap:6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    Atrás
+                </button>
+                <button id="btn-place-order" class="btn-next" onclick="placeOrder()" style="background:#22c55e;flex:1;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    Confirmar y Pagar
+                </button>
+            </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="step-success" class="checkout-step" style="display:none;text-align:center;padding:3rem 1rem;">
+            <div style="display:flex;justify-content:center;margin-bottom:1.5rem;">
+                <div style="width:80px;height:80px;background:#052e16;border:1px solid #22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+            </div>
+            <h3 style="font-family:'Archivo',sans-serif;font-size:1.8rem;margin-bottom:0.8rem;">¡Pedido Confirmado!</h3>
+            <p style="color:var(--text-muted);margin-bottom:0.5rem;">Recibirás la confirmación en tu correo.</p>
+            <p id="order-number" style="color:#22c55e;font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;"></p>
+            <p id="order-status-label" style="margin-bottom:1rem;font-size:0.9rem;"></p>
+            <div id="order-delivery-label" style="color:var(--text-muted);font-size:0.88rem;margin-bottom:1.5rem;"></div>
+            <!-- Resumen final de orden -->
+            <div id="order-final-summary" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.2rem;text-align:left;margin-bottom:1.5rem;font-size:0.88rem;"></div>
+            <!-- Comprobante electrónico -->
+            <div id="comprobante-result" style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:1rem;text-align:left;margin-bottom:1.5rem;font-size:0.85rem;"></div>
+            <button class="btn-next" onclick="closeCheckout();resetCart();" style="width:auto;padding:0.8rem 2.5rem;display:inline-flex;align-items:center;gap:8px;">
+                Seguir Comprando
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('header');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Animate on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .product-card, .section-title').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // ── CART LOGIC ──
+        let cart = [];
+        let selectedPay = '';
+        let currentStep = 1;
+        let documentValidated = false;
+        let orderCounter = parseInt(sessionStorage.getItem('pc_order_counter') || '0');
+        let ticketCounter = parseInt(sessionStorage.getItem('pc_ticket_counter') || '0');
+
+        // ── STOCK ──
+        const stockData = {
+            iphone15promax: 5,
+            samsungs24ultra: 8,
+            pixel8pro: 0,
+            xiaomi14ultra: 3
+        };
+
+        function updateStockUI(id) {
+            const label = document.getElementById('stock-label-' + id);
+            const btn = document.getElementById('btn-cart-' + id);
+            if (!label || !btn) return;
+            const s = stockData[id];
+            label.textContent = 'Stock: ' + s + ' unidad' + (s !== 1 ? 'es' : '');
+            if (s === 0) {
+                label.classList.add('stock-out');
+                btn.disabled = true;
+                btn.classList.add('btn-cart-disabled');
+                btn.textContent = 'Sin Stock';
+            } else {
+                label.classList.remove('stock-out');
+                btn.disabled = false;
+                btn.classList.remove('btn-cart-disabled');
+                btn.textContent = 'Agregar al Carrito';
+            }
+        }
+
+        function addToCart(name, price, id) {
+            const available = stockData[id];
+            const inCart = cart.find(i => i.id === id);
+            const currentQty = inCart ? inCart.qty : 0;
+            if (currentQty >= available) {
+                alert('No hay más stock disponible para ' + name + '.'); return;
+            }
+            stockData[id]--;
+            updateStockUI(id);
+            if (inCart) {
+                inCart.qty++;
+            } else {
+                cart.push({ id, name, price, qty: 1 });
+            }
+            updateCartBadge();
+            animateBadge();
+            renderCartItems();
+        }
+
+        function updateCartBadge() {
+            const total = cart.reduce((s, i) => s + i.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            badge.textContent = total;
+            if (total > 0) { badge.classList.add('visible'); } else { badge.classList.remove('visible'); }
+            const mobileCount = document.getElementById('mobile-cart-count');
+            if (mobileCount) {
+                mobileCount.textContent = total;
+                mobileCount.style.display = total > 0 ? 'flex' : 'none';
+            }
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            document.getElementById('cart-subtotal').textContent = 'S/ ' + subtotal.toLocaleString('es-PE');
+        }
+
+        function animateBadge() {
+            const badge = document.getElementById('cart-badge');
+            badge.classList.remove('bounce');
+            void badge.offsetWidth;
+            badge.classList.add('bounce');
+        }
+
+        function renderCartItems() {
+            const list = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                list.innerHTML = '<div class="cart-empty-msg"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><p>Tu carrito está vacío</p></div>';
+                return;
+            }
+            list.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6"/><circle cx="12" cy="17" r="1"/></svg>
+                    </div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">S/ ${item.price.toLocaleString('es-PE')} c/u</div>
+                    </div>
+                    <div class="cart-item-qty">
+                        <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                        <span class="qty-num">${item.qty}</span>
+                        <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeItem('${item.id}')" title="Eliminar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            if (delta > 0) {
+                if (stockData[id] <= 0) { alert('No hay más stock disponible.'); return; }
+                stockData[id]--;
+                item.qty++;
+            } else {
+                item.qty--;
+                stockData[id]++;
+                if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+            }
+            updateStockUI(id);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function removeItem(id) {
+            const item = cart.find(i => i.id === id);
+            if (item) { stockData[id] += item.qty; updateStockUI(id); }
+            cart = cart.filter(i => i.id !== id);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function openCart() {
+            if (cart.length === 0) renderCartItems();
+            document.getElementById('cart-overlay').style.display = 'block';
+            document.getElementById('cart-drawer').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCart() {
+            document.getElementById('cart-overlay').style.display = 'none';
+            document.getElementById('cart-drawer').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function goCheckout() {
+            if (cart.length === 0) return;
+            closeCart();
+            currentStep = 1;
+            documentValidated = false;
+            showStep(1);
+            document.getElementById('checkout-overlay').style.display = 'block';
+            document.getElementById('checkout-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-overlay').style.display = 'none';
+            document.getElementById('checkout-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function showStep(n) {
+            [1,2,3,4,'success'].forEach(s => {
+                const el = document.getElementById('step-' + s);
+                if (el) el.style.display = 'none';
+            });
+            const target = document.getElementById('step-' + n);
+            if (target) target.style.display = 'block';
+            for (let i = 1; i <= 4; i++) {
+                const ind = document.getElementById('step-ind-' + i);
+                if (!ind) continue;
+                ind.classList.remove('active','done');
+                if (i < n) ind.classList.add('done');
+                else if (i === n) ind.classList.add('active');
+            }
+            document.getElementById('checkout-modal').scrollTop = 0;
+        }
+
+        // ── RENIEC VALIDATION ──
+        function onTipoDocChange() {
+            const tipo = document.getElementById('inp-tipo-doc').value;
+            const wrapper = document.getElementById('btn-validate-wrapper');
+            const rucFields = document.getElementById('ruc-fields');
+            const btnText = document.getElementById('validate-btn-text');
+            documentValidated = false;
+            document.getElementById('validate-status').style.display = 'none';
+            document.getElementById('inp-num-doc').value = '';
+            document.getElementById('inp-nombres').value = '';
+            document.getElementById('inp-apellidos').value = '';
+            document.getElementById('inp-dni').value = '';
+
+            if (!tipo) { wrapper.style.display = 'none'; rucFields.style.display = 'none'; return; }
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            if (tipo === 'ruc') {
+                rucFields.style.display = 'block';
+                btnText.textContent = 'Validar RUC';
+            } else {
+                rucFields.style.display = 'none';
+                btnText.textContent = 'Validar con RENIEC';
+            }
+        }
+
+        function onNumDocInput() {
+            documentValidated = false;
+            document.getElementById('validate-status').style.display = 'none';
+        }
+
+        // URL del backend Flask local. Cambiar si se despliega en otro servidor.
+        const BACKEND_URL = 'http://localhost:5000';
+
+        async function validateDocument() {
+            const tipo = document.getElementById('inp-tipo-doc').value;
+            const num = document.getElementById('inp-num-doc').value.trim();
+            const statusEl = document.getElementById('validate-status');
+            const loader = document.getElementById('validate-loader');
+            const btnText = document.getElementById('validate-btn-text');
+            const btn = document.getElementById('btn-validate-doc');
+
+            // ── Validaciones locales de formato ──
+            if (!tipo) { alert('Selecciona el tipo de documento.'); return; }
+
+            if (tipo === 'dni' && !/^\d{8}$/.test(num)) {
+                statusEl.textContent = '❌ El DNI debe tener exactamente 8 dígitos.';
+                statusEl.style.color = '#f87171'; statusEl.style.display = 'inline'; return;
+            }
+            if (tipo === 'ce' && num.length < 6) {
+                statusEl.textContent = '❌ Carnet de Extranjería inválido (mín. 6 caracteres).';
+                statusEl.style.color = '#f87171'; statusEl.style.display = 'inline'; return;
+            }
+            if (tipo === 'ruc' && !/^\d{11}$/.test(num)) {
+                statusEl.textContent = '❌ El RUC debe tener exactamente 11 dígitos.';
+                statusEl.style.color = '#f87171'; statusEl.style.display = 'inline'; return;
+            }
+
+            // ── Mostrar loader ──
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+            btnText.textContent = 'Validando...';
+            statusEl.style.display = 'none';
+
+            // ── CE y RUC: usar datos simulados (no hay endpoint real) ──
+            if (tipo === 'ce' || tipo === 'ruc') {
+                await new Promise(r => setTimeout(r, 1200));
+                btn.disabled = false; loader.style.display = 'none';
+                if (tipo === 'ce') {
+                    document.getElementById('inp-nombres').value = 'CARLOS EDUARDO';
+                    document.getElementById('inp-apellidos').value = 'MENDEZ SILVA';
+                    document.getElementById('inp-dni').value = num;
+                    btnText.textContent = 'Validar con RENIEC';
+                } else {
+                    document.getElementById('inp-razon-social').value = 'IMPORTACIONES TECH PERÚ S.A.C.';
+                    document.getElementById('inp-nombres').value = 'REPRESENTANTE';
+                    document.getElementById('inp-apellidos').value = 'LEGAL';
+                    document.getElementById('inp-dni').value = num;
+                    btnText.textContent = 'Validar RUC';
+                }
+                documentValidated = true;
+                statusEl.textContent = '✅ Validación exitosa (simulado)';
+                statusEl.style.color = '#4ade80'; statusEl.style.display = 'inline';
+                return;
+            }
+
+            // ── DNI: llamada REAL al backend Flask ──
+            try {
+                const resp = await fetch(`${BACKEND_URL}/api/dni/${num}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const json = await resp.json();
+
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.textContent = 'Validar con RENIEC';
+
+                if (!resp.ok || !json.ok) {
+                    statusEl.textContent = '❌ ' + (json.error || 'DNI no encontrado.');
+                    statusEl.style.color = '#f87171'; statusEl.style.display = 'inline';
+                    return;
+                }
+
+                const d = json.data;
+                // Separar nombre_completo si los campos individuales vienen vacíos
+                const nombres   = d.nombres    || d.nombre_completo?.split(' ').slice(0, -2).join(' ') || '';
+                const apellidos = (d.apellido_paterno + ' ' + d.apellido_materno).trim()
+                                  || d.nombre_completo?.split(' ').slice(-2).join(' ') || '';
+
+                document.getElementById('inp-nombres').value   = nombres;
+                document.getElementById('inp-apellidos').value = apellidos;
+                document.getElementById('inp-dni').value       = num;
+
+                documentValidated = true;
+                statusEl.textContent = '✅ Identidad validada con RENIEC';
+                statusEl.style.color = '#4ade80'; statusEl.style.display = 'inline';
+
+                // Mostrar datos extra en tooltip/debug (opcional)
+                if (d.fecha_nacimiento) {
+                    statusEl.textContent += ` · Nac. ${d.fecha_nacimiento}`;
+                }
+
+            } catch (err) {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.textContent = 'Validar con RENIEC';
+
+                // Si el backend no está corriendo, caer en simulación
+                if (err.name === 'TypeError' || err.message.includes('fetch')) {
+                    console.warn('Backend no disponible, usando simulación.');
+                    const fakeData = [
+                        { nombres: 'JUAN CARLOS', apellidos: 'GARCÍA LÓPEZ' },
+                        { nombres: 'MARÍA DEL CARMEN', apellidos: 'QUISPE FLORES' },
+                        { nombres: 'PEDRO ANTONIO', apellidos: 'RODRÍGUEZ VARGAS' },
+                    ];
+                    const fake = fakeData[parseInt(num.slice(-1)) % fakeData.length];
+                    document.getElementById('inp-nombres').value = fake.nombres;
+                    document.getElementById('inp-apellidos').value = fake.apellidos;
+                    document.getElementById('inp-dni').value = num;
+                    documentValidated = true;
+                    statusEl.textContent = '✅ Validación exitosa (modo offline)';
+                    statusEl.style.color = '#fbbf24'; statusEl.style.display = 'inline';
+                } else {
+                    statusEl.textContent = '❌ Error de conexión con el servidor.';
+                    statusEl.style.color = '#f87171'; statusEl.style.display = 'inline';
+                }
+            }
+        }
+
+        // ── COMPROBANTE ──
+        function onComprobanteChange() {
+            const v = document.getElementById('inp-comprobante').value;
+            document.getElementById('factura-fields').style.display = v === 'factura' ? 'block' : 'none';
+        }
+
+        // ── MODALIDAD DE ENTREGA ──
+        function onModalidadChange() {
+            const v = document.getElementById('inp-modalidad').value;
+            document.getElementById('delivery-recargo-msg').style.display = v === 'delivery' ? 'flex' : 'none';
+        }
+
+        // ── GENERATE ORDER NUMBER ──
+        function generateOrderNumber() {
+            orderCounter++;
+            sessionStorage.setItem('pc_order_counter', orderCounter);
+            return 'PC-2026-' + String(orderCounter).padStart(4, '0');
+        }
+
+        function nextStep(from) {
+            if (from === 1) {
+                const tipo = document.getElementById('inp-tipo-doc').value;
+                const num = document.getElementById('inp-num-doc').value.trim();
+                const nombres = document.getElementById('inp-nombres').value.trim();
+                const apellidos = document.getElementById('inp-apellidos').value.trim();
+                const tel = document.getElementById('inp-telefono').value.trim();
+                const email = document.getElementById('inp-email').value.trim();
+
+                if (!tipo || !num) { alert('Selecciona el tipo de documento e ingresa el número.'); return; }
+                if (!documentValidated) { alert('Debes validar tu documento antes de continuar.'); return; }
+                if (!nombres || !apellidos || !tel || !email) {
+                    alert('Por favor completa todos los campos obligatorios.'); return;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    alert('Ingresa un correo válido.'); return;
+                }
+                if (tipo === 'ruc') {
+                    const razon = document.getElementById('inp-razon-social').value.trim();
+                    const dirFiscal = document.getElementById('inp-dir-fiscal').value.trim();
+                    if (!razon || !dirFiscal) { alert('Completa Razón Social y Dirección Fiscal.'); return; }
+                }
+            }
+            if (from === 2) {
+                const dpto = document.getElementById('inp-dpto').value;
+                const prov = document.getElementById('inp-provincia').value.trim();
+                const dist = document.getElementById('inp-distrito').value.trim();
+                const dir = document.getElementById('inp-direccion').value.trim();
+                if (!dpto || !prov || !dist || !dir) {
+                    alert('Por favor completa todos los campos obligatorios.'); return;
+                }
+            }
+            if (from === 3) {
+                if (!selectedPay) { alert('Selecciona un método de pago.'); return; }
+                if (selectedPay === 'visa') {
+                    const num = document.getElementById('inp-card-num').value.trim();
+                    const exp = document.getElementById('inp-card-exp').value.trim();
+                    const cvv = document.getElementById('inp-card-cvv').value.trim();
+                    const cname = document.getElementById('inp-card-name').value.trim();
+                    if (!num || !exp || !cvv || !cname) { alert('Completa los datos de la tarjeta.'); return; }
+                }
+                const comprobante = document.getElementById('inp-comprobante').value;
+                if (comprobante === 'factura') {
+                    const rucFact = document.getElementById('inp-factura-ruc').value.trim();
+                    const razonFact = document.getElementById('inp-factura-razon').value.trim();
+                    if (!/^\d{11}$/.test(rucFact)) { alert('El RUC de la factura debe tener 11 dígitos.'); return; }
+                    if (!razonFact) { alert('Ingresa la Razón Social para la factura.'); return; }
+                }
+                buildSummary();
+            }
+            currentStep = from + 1;
+            showStep(currentStep);
+        }
+
+        function prevStep(from) {
+            currentStep = from - 1;
+            showStep(currentStep);
+        }
+
+        function selectPay(method) {
+            selectedPay = method;
+            document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('pay-' + method).classList.add('selected');
+            ['visa-form','yape-info','bbva-info','paypal-info'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            const map = { visa:'visa-form', yape:'yape-info', bbva:'bbva-info', paypal:'paypal-info' };
+            if (map[method]) document.getElementById(map[method]).style.display = 'block';
+        }
+
+        function buildSummary() {
+            const nombres = document.getElementById('inp-nombres').value.trim();
+            const apellidos = document.getElementById('inp-apellidos').value.trim();
+            const email = document.getElementById('inp-email').value.trim();
+            const tel = document.getElementById('inp-telefono').value.trim();
+            const dni = document.getElementById('inp-dni').value.trim();
+            const dpto = document.getElementById('inp-dpto').value;
+            const prov = document.getElementById('inp-provincia').value.trim();
+            const dist = document.getElementById('inp-distrito').value.trim();
+            const dir = document.getElementById('inp-direccion').value.trim();
+            const ref = document.getElementById('inp-referencia').value.trim();
+            const modalidad = document.getElementById('inp-modalidad').value;
+            const comprobante = document.getElementById('inp-comprobante').value;
+
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const recargo = modalidad === 'delivery' ? 15 : 0;
+            const total = subtotal + recargo;
+
+            const payNames = { paypal:'PayPal', yape:'Yape', bbva:'BBVA Transferencia', visa:'Visa / Mastercard' };
+            const modalidadLabel = modalidad === 'delivery' ? 'Delivery' : 'Recojo en tienda';
+
+            const itemsHTML = cart.map(i =>
+                `<div class="summary-item"><span>${i.name} x${i.qty}</span><span>S/ ${(i.price*i.qty).toLocaleString('es-PE')}</span></div>`
+            ).join('');
+
+            document.getElementById('order-summary').innerHTML = `
+                <div class="summary-section">
+                    <div class="summary-label">Productos</div>
+                    ${itemsHTML}
+                </div>
+                <div class="summary-section">
+                    <div class="summary-label">Comprador</div>
+                    <div class="summary-item"><span>Nombre</span><span>${nombres} ${apellidos}</span></div>
+                    <div class="summary-item"><span>Documento</span><span>${dni}</span></div>
+                    <div class="summary-item"><span>Teléfono</span><span>${tel}</span></div>
+                    <div class="summary-item"><span>Email</span><span>${email}</span></div>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-label">Entrega</div>
+                    <div class="summary-item"><span>Modalidad</span><span>${modalidadLabel}</span></div>
+                    <div class="summary-item"><span>${dir}${ref ? ', '+ref : ''}</span><span></span></div>
+                    <div class="summary-item"><span>${dist}, ${prov} – ${dpto}</span><span></span></div>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-label">Pago y Costos</div>
+                    <div class="summary-item"><span>Método</span><span>${payNames[selectedPay]}</span></div>
+                    <div class="summary-item"><span>Comprobante</span><span>${comprobante === 'boleta' ? 'Boleta Electrónica' : 'Factura Electrónica'}</span></div>
+                    <div class="summary-item"><span>Subtotal</span><span>S/ ${subtotal.toLocaleString('es-PE')}</span></div>
+                    <div class="summary-item"><span>Envío</span><span>${recargo > 0 ? 'S/ ' + recargo : 'Gratis'}</span></div>
+                    <div class="summary-item summary-total"><span>TOTAL</span><span>S/ ${total.toLocaleString('es-PE')}</span></div>
+                </div>
+            `;
+        }
+
+        function placeOrder() {
+            const orderNum = generateOrderNumber();
+            const modalidad = document.getElementById('inp-modalidad').value;
+            const comprobante = document.getElementById('inp-comprobante').value;
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const recargo = modalidad === 'delivery' ? 15 : 0;
+            const total = subtotal + recargo;
+            const isPaid = ['visa','paypal','yape'].includes(selectedPay);
+            const estado = isPaid ? 'PAGADO' : 'PENDIENTE';
+            const hash = 'HASH-' + Math.random().toString(36).slice(2,8).toUpperCase();
+            const tipoComp = comprobante === 'boleta' ? 'Boleta Electrónica' : 'Factura Electrónica';
+
+            document.getElementById('order-number').textContent = 'N° de Orden: ' + orderNum;
+            document.getElementById('order-status-label').innerHTML =
+                `Estado: <span style="color:${isPaid?'#4ade80':'#fbbf24'};font-weight:700;">${estado}</span>`;
+            document.getElementById('order-delivery-label').textContent =
+                'Modalidad: ' + (modalidad === 'delivery' ? '🚚 Delivery' : '🏪 Recojo en Tienda');
+
+            const itemsHTML = cart.map(i =>
+                `<div class="summary-item"><span>${i.name} x${i.qty}</span><span>S/ ${(i.price*i.qty).toLocaleString('es-PE')}</span></div>`
+            ).join('');
+            document.getElementById('order-final-summary').innerHTML = `
+                ${itemsHTML}
+                <div class="summary-item" style="margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.07);padding-top:0.5rem;">
+                    <span>Subtotal</span><span>S/ ${subtotal.toLocaleString('es-PE')}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Envío</span><span>${recargo > 0 ? 'S/ '+recargo : 'Gratis'}</span>
+                </div>
+                <div class="summary-item summary-total">
+                    <span>TOTAL</span><span>S/ ${total.toLocaleString('es-PE')}</span>
+                </div>
+            `;
+
+            document.getElementById('comprobante-result').innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+                    <span style="font-size:1.2rem;">🧾</span>
+                    <strong>${tipoComp} generado</strong>
+                </div>
+                <div style="color:var(--text-muted);font-size:0.82rem;">Código: <span style="color:#4ade80;font-family:monospace;">${hash}</span></div>
+                <div style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;">✅ Validado por SUNAT/OSE <em>(simulado)</em></div>
+            `;
+
+            showStep('success');
+            document.getElementById('steps-bar').style.display = 'none';
+            document.getElementById('checkout-back').style.display = 'none';
+        }
+
+        function resetCart() {
+            cart = [];
+            selectedPay = '';
+            currentStep = 1;
+            documentValidated = false;
+            updateCartBadge();
+            renderCartItems();
+            document.getElementById('steps-bar').style.display = 'flex';
+            document.getElementById('checkout-back').style.display = 'block';
+            // Reset RENIEC
+            document.getElementById('inp-tipo-doc').value = '';
+            document.getElementById('inp-num-doc').value = '';
+            document.getElementById('btn-validate-wrapper').style.display = 'none';
+            document.getElementById('ruc-fields').style.display = 'none';
+            document.getElementById('validate-status').style.display = 'none';
+        }
+
+        // ── POSTVENTA (sección) ──
+        const WAREHOUSE = {
+            lat: -12.0924,
+            lng: -77.0224,
+            name: 'PhoneCorp – Almacén Central',
+            address: 'Av. Innovación Tecnológica N.º 123, San Isidro, Lima'
+        };
+
+        let pvMap = null;
+        let pvWarehouseMarker = null;
+        let pvUserMarker = null;
+        let pvRouteControl = null;
+        let pvUserLocation = null;
+        let pvMapInitialized = false;
+
+        // Inicializar el mapa al entrar en el viewport (IntersectionObserver)
+        (function() {
+            const section = document.getElementById('postventa');
+            if (!section) return;
+            const io = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !pvMapInitialized) {
+                    pvMapInitialized = true;
+                    pvInitMap();
+                    io.disconnect();
+                }
+            }, { threshold: 0.15 });
+            io.observe(section);
+        })();
+
+        function pvInitMap() {
+            if (typeof L === 'undefined') {
+                document.getElementById('pv-map-loader').innerHTML =
+                    '<span style="color:#f87171;font-size:0.85rem;">No se pudo cargar el mapa. Verifica tu conexión.</span>';
+                return;
+            }
+
+            const loader  = document.getElementById('pv-map-loader');
+            const mapDiv  = document.getElementById('pv-map');
+            const statusEl = document.getElementById('pv-map-status');
+
+            // Tiles oscuros CartoDB para combinar con el tema del sitio
+            pvMap = L.map('pv-map', {
+                center: [WAREHOUSE.lat, WAREHOUSE.lng],
+                zoom: 15,
+                zoomControl: true,
+                scrollWheelZoom: false
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap © CARTO',
+                maxZoom: 19
+            }).addTo(pvMap);
+
+            // Marcador almacén con ícono personalizado
+            const warehouseIcon = L.divIcon({
+                html: `<div style="
+                    width:40px;height:40px;
+                    background:linear-gradient(135deg,#fff 0%,#e5e5e5 100%);
+                    border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+                    border:2px solid rgba(255,255,255,0.15);
+                    box-shadow:0 4px 16px rgba(0,0,0,0.5);
+                    display:flex;align-items:center;justify-content:center;">
+                    <svg style="transform:rotate(45deg)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>`,
+                className: '',
+                iconSize: [40, 40],
+                iconAnchor: [20, 40],
+                popupAnchor: [0, -42]
+            });
+
+            pvWarehouseMarker = L.marker([WAREHOUSE.lat, WAREHOUSE.lng], { icon: warehouseIcon })
+                .addTo(pvMap)
+                .bindPopup(`
+                    <div style="font-family:'DM Sans',sans-serif;min-width:190px;padding:2px 0;">
+                        <strong style="font-size:0.9rem;">${WAREHOUSE.name}</strong><br>
+                        <span style="font-size:0.8rem;color:#555;">${WAREHOUSE.address}</span><br>
+                        <span style="font-size:0.78rem;color:#888;margin-top:4px;display:block;">(01) 999-1919 &nbsp;·&nbsp; Lun–Vie 8–18h</span>
+                    </div>
+                `, { maxWidth: 260 })
+                .openPopup();
+
+            loader.style.display = 'none';
+            mapDiv.classList.add('visible');
+            setTimeout(() => pvMap.invalidateSize(), 100);
+
+            statusEl.textContent = 'San Isidro, Lima';
+            statusEl.style.display = 'inline-block';
+
+            // Pedir ubicación del usuario silenciosamente
+            pvRequestUserLocation();
+        }
+
+        function pvRequestUserLocation() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    pvUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    const userIcon = L.divIcon({
+                        html: `<div style="
+                            width:16px;height:16px;border-radius:50%;
+                            background:#fff;
+                            border:3px solid rgba(255,255,255,0.4);
+                            box-shadow:0 0 0 6px rgba(255,255,255,0.12),0 2px 8px rgba(0,0,0,0.4);">
+                        </div>`,
+                        className: '',
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    });
+                    pvUserMarker = L.marker([pvUserLocation.lat, pvUserLocation.lng], { icon: userIcon })
+                        .addTo(pvMap)
+                        .bindPopup('<span style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;">Tu ubicación actual</span>');
+                },
+                () => {} // silencioso si deniega
+            );
+        }
+
+        function pvGenerateRoute() {
+            if (!pvMap) return;
+            const statusEl = document.getElementById('pv-route-status');
+            const btn = document.getElementById('pv-route-btn');
+
+            if (!pvUserLocation) {
+                statusEl.textContent = 'Activa tu ubicación en el navegador para generar la ruta.';
+                statusEl.style.display = 'block';
+                // Centrar en almacén de todas formas
+                pvMap.setView([WAREHOUSE.lat, WAREHOUSE.lng], 15);
+                pvWarehouseMarker.openPopup();
+                return;
+            }
+
+            if (pvRouteControl) { pvMap.removeControl(pvRouteControl); pvRouteControl = null; }
+
+            if (typeof L.Routing !== 'undefined') {
+                pvRouteControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(pvUserLocation.lat, pvUserLocation.lng),
+                        L.latLng(WAREHOUSE.lat, WAREHOUSE.lng)
+                    ],
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    show: false,
+                    collapsible: true,
+                    createMarker: () => null,
+                    lineOptions: {
+                        styles: [{ color: '#ffffff', weight: 3, opacity: 0.7 }]
+                    }
+                }).addTo(pvMap);
+
+                setTimeout(() => {
+                    if (pvUserMarker && pvWarehouseMarker) {
+                        pvMap.fitBounds(
+                            L.featureGroup([pvUserMarker, pvWarehouseMarker]).getBounds().pad(0.15)
+                        );
+                    }
+                }, 1200);
+            } else {
+                // Fallback línea recta
+                L.polyline(
+                    [[pvUserLocation.lat, pvUserLocation.lng], [WAREHOUSE.lat, WAREHOUSE.lng]],
+                    { color: '#fff', weight: 2, opacity: 0.6, dashArray: '6,5' }
+                ).addTo(pvMap);
+                pvMap.fitBounds(
+                    L.featureGroup([pvUserMarker, pvWarehouseMarker]).getBounds().pad(0.15)
+                );
+            }
+
+            btn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                Ruta generada
+            `;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'default';
+            btn.onclick = null;
+
+            statusEl.textContent = 'Ruta calculada hacia el almacén PhoneCorp.';
+            statusEl.style.display = 'block';
+            pvMap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function buscarPedido() {
+            const doc   = document.getElementById('pv-inp-doc').value.trim();
+            const orden = document.getElementById('pv-inp-orden').value.trim().toUpperCase();
+
+            if (!doc || !orden) { alert('Ingresa tu documento y número de orden.'); return; }
+            if (!/^\d{8}$|^\d{11}$/.test(doc)) { alert('Ingresa un DNI (8 dígitos) o RUC (11 dígitos) válido.'); return; }
+            if (!orden.startsWith('PC-')) { alert('El formato de la orden debe ser PC-YYYY-NNNN.'); return; }
+
+            const estados = ['EN PROCESO', 'ENVIADO', 'ENTREGADO', 'PREPARANDO'];
+            const fakeEstado = estados[Math.floor(Math.random() * estados.length)];
+            const fakeModalidad = Math.random() > 0.5 ? 'Delivery' : 'Recojo en Tienda';
+            const estadoColor = { 'ENTREGADO':'#4ade80','ENVIADO':'#60a5fa','EN PROCESO':'#fbbf24','PREPARANDO':'#c084fc' }[fakeEstado] || '#fff';
+
+            document.getElementById('pv-order-info').innerHTML = `
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        N° de Orden
+                    </span>
+                    <span class="pv-order-value pv-order-highlight">${orden}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Estado
+                    </span>
+                    <span class="pv-order-value" style="color:${estadoColor};font-weight:600;">${fakeEstado}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        Modalidad
+                    </span>
+                    <span class="pv-order-value">${fakeModalidad}</span>
+                </div>
+                <div class="pv-order-row">
+                    <span class="pv-order-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Documento
+                    </span>
+                    <span class="pv-order-value">${doc}</span>
+                </div>
+            `;
+
+            // Mostrar paneles de resultado y ticket
+            document.getElementById('pv-result-card').style.display = 'block';
+            document.getElementById('pv-ticket-card').style.display = 'block';
+            document.getElementById('pv-search-card').style.display = 'none';
+
+            // Scroll suave al resultado
+            document.getElementById('pv-result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetPostventa() {
+            document.getElementById('pv-search-card').style.display = 'block';
+            document.getElementById('pv-result-card').style.display = 'none';
+            document.getElementById('pv-ticket-card').style.display = 'none';
+            document.getElementById('pv-ticket-form').style.display = 'block';
+            document.getElementById('pv-ticket-ok').style.display = 'none';
+            document.getElementById('pv-motivo').value = '';
+            document.getElementById('pv-descripcion').value = '';
+            document.getElementById('pv-inp-doc').value = '';
+            document.getElementById('pv-inp-orden').value = '';
+        }
+
+        function createTicket() {
+            const motivo = document.getElementById('pv-motivo').value;
+            const desc   = document.getElementById('pv-descripcion').value.trim();
+            if (!motivo) { alert('Selecciona un motivo.'); return; }
+            if (desc.length < 10) { alert('La descripción debe tener al menos 10 caracteres.'); return; }
+
+            ticketCounter++;
+            sessionStorage.setItem('pc_ticket_counter', ticketCounter);
+            const tckNum = 'TCK-' + String(ticketCounter).padStart(4, '0');
+
+            document.getElementById('pv-ticket-form').style.display = 'none';
+            document.getElementById('pv-ticket-ok').style.display = 'block';
+            document.getElementById('pv-ticket-num').textContent = 'Ticket registrado: ' + tckNum;
+        }
+
+
+        // ── HAMBURGER MENU ──
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        function openMobileMenu() {
+            hamburgerBtn.classList.add('open');
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            hamburgerBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeMobileMenu() {
+            hamburgerBtn.classList.remove('open');
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+
+        // Cerrar menú con tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMobileMenu();
+        });
+
+        // Badge móvil sincronizado dentro de updateCartBadge()
+
+        // Format card number with spaces
+        document.addEventListener('input', function(e) {
+            if (e.target.id === 'inp-card-num') {
+                let v = e.target.value.replace(/\D/g,'').slice(0,16);
+                e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+            }
+            if (e.target.id === 'inp-card-exp') {
+                let v = e.target.value.replace(/\D/g,'').slice(0,4);
+                if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+                e.target.value = v;
+            }
+        });
+    </script>
+    <script type="module" src="./headBot.js"></script>
+</body>
+</html>
